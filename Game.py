@@ -1,9 +1,9 @@
-
 import os
 import random
 import time
 
 import turtle
+
 turtle.fd(0)
 turtle.speed(0)
 turtle.bgcolor("black")
@@ -14,7 +14,7 @@ turtle.tracer(0)
 
 class Sprite(turtle.Turtle):
     def __init__(self, spriteshape, color, startx, starty):
-        turtle.Turtle.__init__(self, shape = spriteshape)
+        turtle.Turtle.__init__(self, shape=spriteshape)
         self.speed(0)
         self.penup()
         self.color(color)
@@ -43,16 +43,12 @@ class Sprite(turtle.Turtle):
 
     def is_collision(self, other):
         if (self.xcor() >= (other.xcor() - 20)) and \
-        (self.xcor() <= (other.xcor() + 20)) and \
-        (self.ycor() >= (other.ycor() - 20)) and \
-        (self.ycor() <= (other.ycor() + 20)):
+                (self.xcor() <= (other.xcor() + 20)) and \
+                (self.ycor() >= (other.ycor() - 20)) and \
+                (self.ycor() <= (other.ycor() + 20)):
             return True
         else:
             return False
-
-
-
-
 
 
 class Player(Sprite):
@@ -74,11 +70,13 @@ class Player(Sprite):
     def decelerate(self):
         self.speed -= 1
 
+
 class Enemy(Sprite):
     def __init__(self, spriteshape, color, startx, starty):
         Sprite.__init__(self, spriteshape, color, startx, starty)
         self.speed = 6
         self.setheading(random.randint(0, 360))
+
 
 class Ally(Sprite):
     def __init__(self, spriteshape, color, startx, starty):
@@ -90,20 +88,21 @@ class Ally(Sprite):
         self.fd(self.speed)
 
         if self.xcor() > 290:
-                self.setx(290)
-                self.lt(60)
+            self.setx(290)
+            self.lt(60)
 
         if self.xcor() < -290:
-                self.setx(-290)
-                self.lt(60)
+            self.setx(-290)
+            self.lt(60)
 
         if self.ycor() > 290:
-                self.sety(290)
-                self.lt(60)
+            self.sety(290)
+            self.lt(60)
 
         if self.ycor() < -290:
-                self.sety(-290)
-                self.lt(60)
+            self.sety(-290)
+            self.lt(60)
+
 
 class Missile(Sprite):
     def __init__(self, spriteshape, color, startx, starty):
@@ -111,7 +110,7 @@ class Missile(Sprite):
         self.shapesize(stretch_wid=0.1, stretch_len=1.0, outline=None)
         self.speed = 50
         self.status = "ready"
-        #self.goto(-1000, 1000)
+        # self.goto(-1000, 1000)
 
     def fire(self):
         if self.status == "ready":
@@ -131,15 +130,16 @@ class Missile(Sprite):
             self.fd(self.speed)
 
         if self.xcor() < -290 or self.xcor() > 290 or \
-            self.ycor()< -290 or self.ycor()> 290:
+                self.ycor() < -290 or self.ycor() > 290:
             self.goto(-1000, 1000)
             self.status = "ready"
+
 
 class Particle(Sprite):
     def __init__(self, spriteshape, color, startx, starty):
         Sprite.__init__(self, spriteshape, color, startx, starty)
         self.shapesize(stretch_wid=0.1, stretch_len=0.1, outline=None)
-        self.goto(-1000,-1000)
+        self.goto(-1000, -1000)
         self.frame = 0
 
     def explode(self, startx, starty):
@@ -148,14 +148,15 @@ class Particle(Sprite):
         self.frame = 1
 
     def move(self):
-        if self.frame > 0:
-            self.fd += 1
+        # if self.frame > 0:
+        #     self.fd += 1
 
         if self.frame > 20:
             self.frame = 0
             self.goto(-1000, -1000)
 
-class Game():
+
+class Game:
     def __init__(self):
         self.level = 1
         self.score = 0
@@ -179,11 +180,10 @@ class Game():
 
     def show_status(self):
         self.pen.undo()
-        msg = "Score: %s" %(self.score)
+        msg = "Score: %s, Lives: %s" % (self.score, self.lives)
         self.pen.penup()
         self.pen.goto(-300, 310)
         self.pen.write(msg, font=("Arial", 16, "normal"))
-
 
 
 game = Game()
@@ -192,15 +192,14 @@ game.draw_border()
 
 game.show_status()
 
-
 player = Player("triangle", "white", 0, 0)
 missile = Missile("triangle", "yellow", 0, 0)
 
-enemies =[]
+enemies = []
 for i in range(6):
     enemies.append(Enemy("circle", "red", -100, 0))
 
-allies =[]
+allies = []
 for i in range(6):
     allies.append(Ally("square", "blue", 100, 0))
 
@@ -214,8 +213,6 @@ turtle.onkey(player.accelerate, "Up")
 turtle.onkey(player.decelerate, "Down")
 turtle.onkey(missile.fire, "space")
 turtle.listen()
-
-
 
 while True:
     turtle.update()
@@ -232,8 +229,8 @@ while True:
             x = random.randint(-250, 250)
             y = random.randint(-250, 250)
             enemy.goto(x, y)
-            game.score -= 100
             game.show_status()
+            game.lives -= 1
 
         if missile.is_collision(enemy):
             os.system("afplay explosion.mp3&")
@@ -245,7 +242,6 @@ while True:
             game.show_status()
             for particle in particles:
                 particle.explode(missile.xcor(), missile.ycor())
-
 
     for ally in allies:
         ally.move()
@@ -259,13 +255,6 @@ while True:
             game.score += -50
             game.show_status()
 
-
     for particle in particles:
         particle.move()
 
-
-
-
-
-
-delay = input("Press enter to finish. > ")
