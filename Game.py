@@ -27,19 +27,19 @@ class Sprite(turtle.Turtle):
 
         if self.xcor() > 290:
             self.setx(290)
-            self.rt(60)
+            self.rt(random.randint(0, 60))
 
         if self.xcor() < -290:
             self.setx(-290)
-            self.rt(60)
+            self.rt(random.randint(0, 60))
 
         if self.ycor() > 290:
             self.sety(290)
-            self.rt(60)
+            self.rt(random.randint(0, 60))
 
         if self.ycor() < -290:
             self.sety(-290)
-            self.rt(60)
+            self.rt(random.randint(0, 60))
 
     def is_collision(self, other):
         if (self.xcor() >= (other.xcor() - 20)) and \
@@ -74,8 +74,8 @@ class Player(Sprite):
 class Enemy(Sprite):
     def __init__(self, spriteshape, color, startx, starty):
         Sprite.__init__(self, spriteshape, color, startx, starty)
-        self.speed = 6
-        self.setheading(random.randint(0, 360))
+        self.speed = random.randint(5, 20)
+        self.setheading(random.randint(0, 720))
 
 
 class Ally(Sprite):
@@ -117,6 +117,15 @@ class Missile(Sprite):
             os.system("afplay laser.mp3&")
             self.goto(player.xcor(), player.ycor())
             self.setheading(player.heading())
+            self.status = "firing"
+
+    def spray(self):
+        if self.status == "ready":
+            os.system("afplay laser.mp3&")
+            self.status = "firing"
+            self.goto(player.xcor(), player.ycor())
+            self.status = "firing"
+            self.setheading(player.heading() - random.randint(-40, 40))
             self.status = "firing"
 
     def move(self):
@@ -162,7 +171,7 @@ class Game:
         self.score = 0
         self.state = "playing"
         self.pen = turtle.Turtle()
-        self.lives = 3
+        self.lives = 100
 
     def draw_border(self):
         self.pen.speed(0)
@@ -212,9 +221,13 @@ turtle.onkey(player.turn_right, "Right")
 turtle.onkey(player.accelerate, "Up")
 turtle.onkey(player.decelerate, "Down")
 turtle.onkey(missile.fire, "space")
+turtle.onkey(missile.spray, "m")
 turtle.listen()
-
 while True:
+    if game.lives <= 0:
+        game.state = "over"
+        break
+
     turtle.update()
     time.sleep(0.02)
 
